@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group Generator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="generator">
+        <h2>Group Generator</h2>
+        <!-- Period Buttons -->
+        <div id="period-buttons">
+            <button onclick="loadNames(1)">Period 1</button>
+            <button onclick="loadNames(2)">Period 2</button>
+            <button onclick="loadNames(3)">Period 3</button>
+            <button onclick="loadNames(4)">Period 4</button>
+            <button onclick="loadNames(5)">Period 5</button>
+        </div>
+        <div>
+            <label for="categoryA">Category A:</label>
+            <input type="text" id="categoryA" placeholder="Enter names separated by commas">
+        </div>
+        <div>
+            <label for="categoryB">Category B:</label>
+            <input type="text" id="categoryB" placeholder="Enter names separated by commas">
+        </div>
+        <div>
+            <label for="groupSize">Number of People per Group:</label>
+            <input type="number" id="groupSize" min="1" value="1">
+        </div>
+        <button onclick="generateGroups()">Generate Groups</button>
+    </div>
+
+    <div id="timer" style="display:none;">
+        <h2>Timer</h2>
+        <div>
+            <label for="time">Set Time (in seconds):</label>
+            <input type="number" id="time" min="1" value="60">
+        </div>
+        <div id="countdown"></div>
+        <button onclick="startTimer()">Start Timer</button>
+        <button onclick="backToGenerator()">Back to Generator</button>
+    </div>
+
+    <div id="groups-container"></div>
+
+    <script>
+        window.onload = function() {
+            loadNamesFromStorage();
+        };
+
+        function loadNames(period) {
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        var data = xhr.responseText.split("\n");
+                        var categoryAInput = document.getElementById("categoryA");
+                        var categoryBInput = document.getElementById("categoryB");
+                        categoryAInput.value = data[0];
+                        categoryBInput.value = data[1];
+                    } else {
+                        console.error("Failed to load data");
+                    }
+                }
+            };
+            xhr.open("GET", "https://raw.githubusercontent.com/Justice151/gen6/period" + period + ".txt", true);
+            xhr.send();
+        }
+
+        function loadNamesFromStorage() {
+            var categoryAInput = document.getElementById("categoryA");
+            var categoryBInput = document.getElementById("categoryB");
+
+            var savedCategoryA = localStorage.getItem("categoryA");
+            var savedCategoryB = localStorage.getItem("categoryB");
+
+            if (savedCategoryA) {
+                categoryAInput.value = savedCategoryA;
+            }
+
+            if (savedCategoryB) {
+                categoryBInput.value = savedCategoryB;
+            }
+        }
+
+        function saveNamesToStorage() {
+            var categoryAInput = document.getElementById("categoryA");
+            var categoryBInput = document.getElementById("categoryB");
+
+            localStorage.setItem("categoryA", categoryAInput.value);
+            localStorage.setItem("categoryB", categoryBInput.value);
+        }
+
+        function generateGroups() {
+            saveNamesToStorage();
+
+            var categoryA = document.getElementById("categoryA").value.split(",");
+            var categoryB = document.getElementById("categoryB").value.split(",");
+            var groupSize = parseInt(document.getElementById("groupSize").value);
+
+            var combinedNames = categoryA.concat(categoryB);
+            combinedNames.sort(() => Math.random() - 0.5);
+
+            var groups = [];
+            var numGroups = Math.ceil(combinedNames.length / groupSize);
+
+            for (var i = 0; i < numGroups; i++) {
+                var group = [];
+                for (var j = 0; j < groupSize; j++) {
+                    var index = i * groupSize + j;
+                    if (index < combinedNames.length) {
+                        group.push(combinedNames[index]);
+                    }
+                }
+                groups.push(group);
+            }
+
+            var groupsContainer = document.getElementById("groups-container");
+            groupsContainer.innerHTML = ""; // Clear previous groups
+
+            groups.forEach(function(group) {
+                var groupElement = document.createElement("div");
+                groupElement.classList.add("group");
+                groupElement.textContent = group.join(", ");
+                groupsContainer.appendChild(groupElement);
+            });
+        }
+
+        function startTimer() {
+            var time = parseInt(document.getElementById("time").value);
+            var countdownElement = document.getElementById("countdown");
+
+            var interval = setInterval(function() {
+                if (time <= 0) {
+                    clearInterval(interval);
+                    countdownElement.textContent = "Time's up!";
+                } else {
+                    var minutes = Math.floor(time / 60);
+                    var seconds = time % 60;
+                    countdownElement.textContent = ("0" + minutes).slice(-2) + ":" + ("0" + seconds).slice(-2);
+                    time--;
+                }
+            }, 1000);
+        }
+
+        function backToGenerator() {
+            document.getElementById("generator").style.display = "flex";
+            document.getElementById("timer").style.display = "none";
+        }
+    </script>
+</body>
+</html>
