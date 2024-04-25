@@ -25,6 +25,10 @@
             <label for="categoryB">Category B:</label>
             <input type="text" id="categoryB" placeholder="Enter names separated by commas">
         </div>
+        <!-- File Upload -->
+        <div>
+            <input type="file" id="fileUpload" accept=".txt" onchange="handleFileSelect(event)">
+        </div>
         <div>
             <label for="groupSize">Number of People per Group:</label>
             <input type="number" id="groupSize" min="1" value="1">
@@ -148,6 +152,19 @@
         function backToGenerator() {
             document.getElementById("generator").style.display = "flex";
             document.getElementById("timer").style.display = "none";
+        }
+
+        function handleFileSelect(event) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                const fileContent = reader.result;
+                const lines = fileContent.split('\n');
+                const categoryAInput = document.getElementById("categoryA");
+                const categoryBInput = document.getElementById("categoryB");
+                categoryAInput.value = lines[0];
+                categoryBInput.value = lines[1];
+            }
+            reader.readAsText(event.target.files[0]);
         }
     </script>
 </body>
