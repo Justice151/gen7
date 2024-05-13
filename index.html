@@ -124,10 +124,6 @@
     <div id="groups-container"></div>
 
     <script>
-        window.onload = function() {
-            document.getElementById("login").style.display = "block";
-        };
-
         function login() {
             var username = document.getElementById("username").value;
             var password = document.getElementById("password").value;
@@ -172,35 +168,144 @@
         function logout() {
             document.getElementById("login").style.display = "block";
             document.getElementById("generator").style.display = "none";
+            document.getElementById("username").value = "";
+            document.getElementById("password").value = "";
+        }
+
+        window.onload = function() {
+            loadNamesFromStorage();
+        };
+
+        function loadNames(period) {
+            var urls = {
+                "1": "https://justice151.github.io/per1/",
+                "2": "https://justice151.github.io/per2/",
+                "3": "https://justice151.github.io/per3/",
+                "4": "https://justice151.github.io/per4/",
+                "7": "https://justice151.github.io/per7/"
+            };
+
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        var data = xhr.responseText.split("\n");
+                        var categoryAInput = document.getElementById("categoryA");
+                        var categoryBInput = document.getElementById("categoryB");
+                        categoryAInput.value = data[0];
+                        categoryBInput.value = data[1];
+                    } else {
+                        console.error("Failed to load data");
+                    }
+                }
+            };
+            xhr.open("GET", urls[period], true);
+            xhr.send();
+        }
+
+        function loadNamesFromStorage() {
+            var categoryAInput = document.getElementById("categoryA");
+            var categoryBInput = document.getElementById("categoryB");
+
+            var savedCategoryA = localStorage.getItem("categoryA");
+            var savedCategoryB = localStorage.getItem("categoryB");
+
+            if (savedCategoryA) {
+                categoryAInput.value = savedCategoryA;
+            }
+
+            if (savedCategoryB) {
+                categoryBInput.value = savedCategoryB;
+            }
+        }
+
+        function saveNamesToStorage() {
+            var categoryAInput = document.getElementById("categoryA");
+            var categoryBInput = document.getElementById("categoryB");
+
+            localStorage.setItem("categoryA", categoryAInput.value);
+            localStorage.setItem("categoryB", categoryBInput.value);
         }
 
         function generateGroups() {
-            // This function generates groups, you can add your logic here
-            // For demonstration, I'll just display a message
-            alert("Groups generated!");
+            saveNamesToStorage();
+
+            var categoryA = document.getElementById("categoryA").value.split(",");
+            var categoryB = document.getElementById("categoryB").value.split(",");
+            var groupSize = parseInt(document.getElementById("groupSize").value);
+
+            var combinedNames = categoryA.concat(categoryB);
+            combinedNames.sort(() => Math.random() - 0.5);
+
+            var groups = [];
+            var numGroups = Math.ceil(combinedNames.length / groupSize);
+
+            for (var i = 0; i < numGroups; i++) {
+                var group = [];
+                for (var j = 0; j < groupSize; j++) {
+                    var index = i * groupSize + j;
+                    if (index < combinedNames.length) {
+                        group.push(combinedNames[index]);
+                    }
+                }
+                groups.push(group);
+            }
+
+            var groupsContainer = document.getElementById("groups-container");
+            groupsContainer.innerHTML = ""; // Clear previous groups
+
+            groups.forEach(function(group) {
+                var groupElement = document.createElement("div");
+                groupElement.classList.add("group");
+                groupElement.textContent = group.join(", ");
+                groupsContainer.appendChild(groupElement);
+            });
         }
 
         function startTimer() {
-            // This function starts a timer, you can add your logic here
-            // For demonstration, I'll just display a message
-            alert("Timer started!");
+            var time = parseInt(document.getElementById("time").value);
+            var countdownElement = document.getElementById("countdown");
+
+            var interval = setInterval(function() {
+                if (time <= 0) {
+                    clearInterval(interval);
+                    countdownElement.textContent = "Time's up!";
+                } else {
+                    var minutes = Math.floor(time / 60);
+                    var seconds = time % 60;
+                    countdownElement.textContent = ("0" + minutes).slice(-2) + ":" + ("0" + seconds).slice(-2);
+                    time--;
+                }
+            }, 1000);
         }
 
         function backToGenerator() {
-            document.getElementById("generator").style.display = "block";
+            document.getElementById("generator").style.display = "flex";
             document.getElementById("timer").style.display = "none";
         }
 
         function handleFileSelect(event) {
-            // This function handles file upload, you can add your logic here
-            // For demonstration, I'll just display a message
-            alert("File uploaded!");
+            const reader = new FileReader();
+            reader.onload = function() {
+                const fileContent = reader.result;
+                const lines = fileContent.split('\n');
+                const categoryAInput = document.getElementById("categoryA");
+                const categoryBInput = document.getElementById("categoryB");
+                categoryAInput.value = lines[0];
+                categoryBInput.value = lines[1];
+            }
+            reader.readAsText(event.target.files[0]);
         }
 
+        // Event listener for period selection
+        document.getElementById("periodSelect").addEventListener("change", function() {
+            var selectedPeriod = this.value;
+            loadNames(selectedPeriod);
+        });
+
         function resetInputFields() {
-            // This function resets input fields, you can add your logic here
-            // For demonstration, I'll just display a message
-            alert("Input fields reset!");
+            document.getElementById("categoryA").value = "";
+            document.getElementById("categoryB").value = "";
         }
     </script>
 </body>
