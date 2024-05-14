@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8168500011699772"
+     crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Group Generator</title>
@@ -18,7 +20,7 @@
             height: 100vh;
         }
 
-        #login, #generator {
+        #generator {
             background-color: rgba(255, 255, 255, 0.8);
             padding: 20px;
             border-radius: 10px;
@@ -152,7 +154,7 @@
                                     }
                                 }
                             };
-                            xhrPassword.open("GET", "https://raw.githubusercontent.com/Justice151/gen7/main/passwords.txt", true);
+                            xhrPassword.open("GET", "https://raw.githubusercontent.com/Justice151/gen7/blob/main/passwords.txt", true);
                             xhrPassword.send();
                         } else {
                             alert("Invalid username");
@@ -162,7 +164,7 @@
                     }
                 }
             };
-            xhrUsername.open("GET", "https://raw.githubusercontent.com/Justice151/gen7/main/usnm.txt", true);
+            xhrUsername.open("GET", "https://raw.githubusercontent.com/Justice151/gen7/blob/main/usnm.txt", true);
             xhrUsername.send();
         }
 
