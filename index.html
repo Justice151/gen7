@@ -129,12 +129,13 @@
             var password = document.getElementById("password").value;
 
             var xhrUsername = new XMLHttpRequest();
+            var xhrPassword = new XMLHttpRequest();
+
             xhrUsername.onreadystatechange = function() {
                 if (xhrUsername.readyState === XMLHttpRequest.DONE) {
                     if (xhrUsername.status === 200) {
                         var usernames = xhrUsername.responseText.split(",");
                         if (usernames.includes(username)) {
-                            var xhrPassword = new XMLHttpRequest();
                             xhrPassword.onreadystatechange = function() {
                                 if (xhrPassword.readyState === XMLHttpRequest.DONE) {
                                     if (xhrPassword.status === 200) {
@@ -310,4 +311,3 @@
     </script>
 </body>
 </html>
-
