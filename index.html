@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8168500011699772"
-     crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Group Generator</title>
@@ -20,7 +18,7 @@
             height: 100vh;
         }
 
-        #generator {
+        #login-container {
             background-color: rgba(255, 255, 255, 0.8);
             padding: 20px;
             border-radius: 10px;
@@ -29,8 +27,30 @@
             width: 90%;
         }
 
+        #generator {
+            display: none; /* Initially hide the group generator */
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 600px;
+            width: 90%;
+        }
+
         h2 {
             margin-top: 0;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="number"] {
+            padding: 8px 12px;
+            margin: 8px;
+            width: calc(100% - 16px);
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
         }
 
         button {
@@ -52,19 +72,29 @@
             background-color: #45a049;
         }
 
-        input[type="text"],
-        input[type="number"] {
-            padding: 8px 12px;
-            margin: 8px;
-            width: calc(100% - 16px);
-            box-sizing: border-box;
+        .group {
+            margin: 10px;
+            padding: 10px;
             border: 1px solid #ccc;
             border-radius: 5px;
-            font-size: 16px;
+            background-color: #f9f9f9;
         }
     </style>
 </head>
 <body>
+    <div id="login-container">
+        <h2>Login</h2>
+        <div>
+            <label for="username">Username:</label>
+            <input type="text" id="username" placeholder="Enter your username">
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" id="password" placeholder="Enter your password">
+        </div>
+        <button onclick="login()">Login</button>
+    </div>
+
     <div id="generator">
         <h2>Group Generator</h2>
         <!-- Period Dropdown Lists -->
@@ -111,6 +141,41 @@
     <div id="groups-container"></div>
 
     <script>
+        function login() {
+            var username = document.getElementById("username").value;
+            var password = document.getElementById("password").value;
+
+            // Fetch the list of valid usernames and passwords from your GitHub page
+            fetch('https://raw.githubusercontent.com/Justice151/gen7/main/usnm.txt')
+            .then(response => response.text())
+            .then(data => {
+                var validUsernames = data.split('\n');
+                return fetch('https://raw.githubusercontent.com/Justice151/gen7/main/passwords.txt')
+                .then(response => response.text())
+                .then(data => {
+                    var validPasswords = data.split('\n');
+                    var isValidUser = false;
+                    for (var i = 0; i < validUsernames.length; i++) {
+                        if (validUsernames[i] === username && validPasswords[i] === password) {
+                            isValidUser = true;
+                            break;
+                        }
+                    }
+                    if (isValidUser) {
+                        // Show the group generator section
+                        document.getElementById("login-container").style.display = "none";
+                        document.getElementById("generator").style.display = "block";
+                    } else {
+                        alert("Invalid username or password");
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching valid users:', error);
+                alert("Error fetching valid users. Please try again later.");
+            });
+        }
+
         window.onload = function() {
             loadNamesFromStorage();
         };
@@ -219,7 +284,7 @@
         }
 
         function backToGenerator() {
-            document.getElementById("generator").style.display = "flex";
+            document.getElementById("generator").style.display = "block";
             document.getElementById("timer").style.display = "none";
         }
 
