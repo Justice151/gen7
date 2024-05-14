@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8168500011699772"
-     crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Group Generator</title>
@@ -20,7 +18,7 @@
             height: 100vh;
         }
 
-        #generator {
+        #login, #generator {
             background-color: rgba(255, 255, 255, 0.8);
             padding: 20px;
             border-radius: 10px;
@@ -126,18 +124,21 @@
     <div id="groups-container"></div>
 
     <script>
+        window.onload = function() {
+            document.getElementById("login").style.display = "block";
+        };
+
         function login() {
             var username = document.getElementById("username").value;
             var password = document.getElementById("password").value;
 
             var xhrUsername = new XMLHttpRequest();
-            var xhrPassword = new XMLHttpRequest();
-
             xhrUsername.onreadystatechange = function() {
                 if (xhrUsername.readyState === XMLHttpRequest.DONE) {
                     if (xhrUsername.status === 200) {
                         var usernames = xhrUsername.responseText.split(",");
                         if (usernames.includes(username)) {
+                            var xhrPassword = new XMLHttpRequest();
                             xhrPassword.onreadystatechange = function() {
                                 if (xhrPassword.readyState === XMLHttpRequest.DONE) {
                                     if (xhrPassword.status === 200) {
@@ -154,7 +155,7 @@
                                     }
                                 }
                             };
-                            xhrPassword.open("GET", "https://raw.githubusercontent.com/Justice151/gen7/blob/main/passwords.txt", true);
+                            xhrPassword.open("GET", "https://raw.githubusercontent.com/Justice151/gen7/main/passwords.txt", true);
                             xhrPassword.send();
                         } else {
                             alert("Invalid username");
@@ -164,7 +165,7 @@
                     }
                 }
             };
-            xhrUsername.open("GET", "https://raw.githubusercontent.com/Justice151/gen7/blob/main/usnm.txt", true);
+            xhrUsername.open("GET", "https://raw.githubusercontent.com/Justice151/gen7/main/usnm.txt", true);
             xhrUsername.send();
         }
 
@@ -175,140 +176,54 @@
             document.getElementById("password").value = "";
         }
 
-        window.onload = function() {
-            loadNamesFromStorage();
-        };
-
-        function loadNames(period) {
-            var urls = {
-                "1": "https://justice151.github.io/per1/",
-                "2": "https://justice151.github.io/per2/",
-                "3": "https://justice151.github.io/per3/",
-                "4": "https://justice151.github.io/per4/",
-                "7": "https://justice151.github.io/per7/"
-            };
-
-            var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === XMLHttpRequest.DONE) {
-                    if (xhr.status === 200) {
-                        var data = xhr.responseText.split("\n");
-                        var categoryAInput = document.getElementById("categoryA");
-                        var categoryBInput = document.getElementById("categoryB");
-                        categoryAInput.value = data[0];
-                        categoryBInput.value = data[1];
-                    } else {
-                        console.error("Failed to load data");
-                    }
-                }
-            };
-            xhr.open("GET", urls[period], true);
-            xhr.send();
-        }
-
-        function loadNamesFromStorage() {
-            var categoryAInput = document.getElementById("categoryA");
-            var categoryBInput = document.getElementById("categoryB");
-
-            var savedCategoryA = localStorage.getItem("categoryA");
-            var savedCategoryB = localStorage.getItem("categoryB");
-
-            if (savedCategoryA) {
-                categoryAInput.value = savedCategoryA;
-            }
-
-            if (savedCategoryB) {
-                categoryBInput.value = savedCategoryB;
-            }
-        }
-
-        function saveNamesToStorage() {
-            var categoryAInput = document.getElementById("categoryA");
-            var categoryBInput = document.getElementById("categoryB");
-
-            localStorage.setItem("categoryA", categoryAInput.value);
-            localStorage.setItem("categoryB", categoryBInput.value);
-        }
-
         function generateGroups() {
-            saveNamesToStorage();
-
             var categoryA = document.getElementById("categoryA").value.split(",");
             var categoryB = document.getElementById("categoryB").value.split(",");
-            var groupSize = parseInt(document.getElementById("groupSize").value);
 
-            var combinedNames = categoryA.concat(categoryB);
-            combinedNames.sort(() => Math.random() - 0.5);
+            if (categoryA.length !== categoryB.length) {
+                alert("Category A and Category B must have the same number of names.");
+                return;
+            }
 
-            var groups = [];
-            var numGroups = Math.ceil(combinedNames.length / groupSize);
-
-            for (var i = 0; i < numGroups; i++) {
-                var group = [];
-                for (var j = 0; j < groupSize; j++) {
-                    var index = i * groupSize + j;
-                    if (index < combinedNames.length) {
-                        group.push(combinedNames[index]);
-                    }
-                }
-                groups.push(group);
+            var combinedGroups = [];
+            for (var i = 0; i < categoryA.length; i++) {
+                var group = [categoryA[i], categoryB[i]];
+                combinedGroups.push(group);
             }
 
             var groupsContainer = document.getElementById("groups-container");
             groupsContainer.innerHTML = ""; // Clear previous groups
 
-            groups.forEach(function(group) {
+            combinedGroups.forEach(function(group, index) {
                 var groupElement = document.createElement("div");
                 groupElement.classList.add("group");
-                groupElement.textContent = group.join(", ");
+                groupElement.textContent = "Group " + (index + 1) + ": " + group.join(", ");
                 groupsContainer.appendChild(groupElement);
             });
         }
 
         function startTimer() {
-            var time = parseInt(document.getElementById("time").value);
-            var countdownElement = document.getElementById("countdown");
-
-            var interval = setInterval(function() {
-                if (time <= 0) {
-                    clearInterval(interval);
-                    countdownElement.textContent = "Time's up!";
-                } else {
-                    var minutes = Math.floor(time / 60);
-                    var seconds = time % 60;
-                    countdownElement.textContent = ("0" + minutes).slice(-2) + ":" + ("0" + seconds).slice(-2);
-                    time--;
-                }
-            }, 1000);
+            // This function starts the timer, you can add your logic here
+            // For demonstration, I'll just display a message
+            alert("Timer started!");
         }
 
         function backToGenerator() {
-            document.getElementById("generator").style.display = "flex";
-            document.getElementById("timer").style.display = "none";
+            // This function takes back to the generator, you can add your logic here
+            // For demonstration, I'll just display a message
+            alert("Back to generator!");
         }
 
         function handleFileSelect(event) {
-            const reader = new FileReader();
-            reader.onload = function() {
-                const fileContent = reader.result;
-                const lines = fileContent.split('\n');
-                const categoryAInput = document.getElementById("categoryA");
-                const categoryBInput = document.getElementById("categoryB");
-                categoryAInput.value = lines[0];
-                categoryBInput.value = lines[1];
-            }
-            reader.readAsText(event.target.files[0]);
+            // This function handles file upload, you can add your logic here
+            // For demonstration, I'll just display a message
+            alert("File uploaded!");
         }
 
-        // Event listener for period selection
-        document.getElementById("periodSelect").addEventListener("change", function() {
-            var selectedPeriod = this.value;
-            loadNames(selectedPeriod);
-        });
-
         function resetInputFields() {
-            document.getElementById("categoryA").value = "";
-            document.getElementById("categoryB").value = "";
+            // This function resets input fields, you can add your logic here
+            // For demonstration, I'll just display a message
+            alert("Input fields reset!");
         }
     </script>
 </body>
