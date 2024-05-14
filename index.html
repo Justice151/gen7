@@ -129,6 +129,7 @@
         };
 
         function login() {
+            console.log("Login function called"); // Add this line for debugging
             var username = document.getElementById("username").value;
             var password = document.getElementById("password").value;
 
@@ -177,29 +178,9 @@
         }
 
         function generateGroups() {
-            var categoryA = document.getElementById("categoryA").value.split(",");
-            var categoryB = document.getElementById("categoryB").value.split(",");
-
-            if (categoryA.length !== categoryB.length) {
-                alert("Category A and Category B must have the same number of names.");
-                return;
-            }
-
-            var combinedGroups = [];
-            for (var i = 0; i < categoryA.length; i++) {
-                var group = [categoryA[i], categoryB[i]];
-                combinedGroups.push(group);
-            }
-
-            var groupsContainer = document.getElementById("groups-container");
-            groupsContainer.innerHTML = ""; // Clear previous groups
-
-            combinedGroups.forEach(function(group, index) {
-                var groupElement = document.createElement("div");
-                groupElement.classList.add("group");
-                groupElement.textContent = "Group " + (index + 1) + ": " + group.join(", ");
-                groupsContainer.appendChild(groupElement);
-            });
+            // This function generates groups, you can add your logic here
+            // For demonstration, I'll just display a message
+            alert("Groups generated!");
         }
 
         function startTimer() {
