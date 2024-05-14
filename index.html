@@ -124,47 +124,87 @@
     <div id="groups-container"></div>
 
     <script>
+        window.onload = function() {
+            document.getElementById("login").style.display = "block";
+        };
+
         function login() {
             var username = document.getElementById("username").value;
             var password = document.getElementById("password").value;
 
-            fetch('https://raw.githubusercontent.com/Justice151/gen7/main/usnm.txt')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch usernames');
-                    }
-                    return response.text();
-                })
-                .then(usernames => {
-                    usernames = usernames.split(",");
-                    if (usernames.includes(username)) {
-                        return fetch('https://raw.githubusercontent.com/Justice151/gen7/main/passwords.txt');
+            var xhrUsername = new XMLHttpRequest();
+            xhrUsername.onreadystatechange = function() {
+                if (xhrUsername.readyState === XMLHttpRequest.DONE) {
+                    if (xhrUsername.status === 200) {
+                        var usernames = xhrUsername.responseText.split(",");
+                        if (usernames.includes(username)) {
+                            var xhrPassword = new XMLHttpRequest();
+                            xhrPassword.onreadystatechange = function() {
+                                if (xhrPassword.readyState === XMLHttpRequest.DONE) {
+                                    if (xhrPassword.status === 200) {
+                                        var passwords = xhrPassword.responseText.split(",");
+                                        var index = usernames.indexOf(username);
+                                        if (passwords[index] === password) {
+                                            document.getElementById("login").style.display = "none";
+                                            document.getElementById("generator").style.display = "block";
+                                        } else {
+                                            alert("Invalid password");
+                                        }
+                                    } else {
+                                        alert("Failed to fetch passwords");
+                                    }
+                                }
+                            };
+                            xhrPassword.open("GET", "https://raw.githubusercontent.com/Justice151/gen7/main/passwords.txt", true);
+                            xhrPassword.send();
+                        } else {
+                            alert("Invalid username");
+                        }
                     } else {
-                        throw new Error('Invalid username');
+                        alert("Failed to fetch usernames");
                     }
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch passwords');
-                    }
-                    return response.text();
-                })
-                .then(passwords => {
-                    passwords = passwords.split(",");
-                    var index = usernames.indexOf(username);
-                    if (passwords[index] === password) {
-                        document.getElementById("login").style.display = "none";
-                        document.getElementById("generator").style.display = "block";
-                    } else {
-                        throw new Error('Invalid password');
-                    }
-                })
-                .catch(error => {
-                    alert(error.message);
-                });
+                }
+            };
+            xhrUsername.open("GET", "https://raw.githubusercontent.com/Justice151/gen7/main/usnm.txt", true);
+            xhrUsername.send();
         }
 
-        // Other functions for generating groups, handling file uploads, etc.
+        function logout() {
+            document.getElementById("login").style.display = "block";
+            document.getElementById("generator").style.display = "none";
+            document.getElementById("username").value = "";
+            document.getElementById("password").value = "";
+        }
+
+        function generateGroups() {
+            // This function generates groups, you can add your logic here
+            // For demonstration, I'll just display a message
+            alert("Groups generated!");
+        }
+
+        function startTimer() {
+            // This function starts the timer, you can add your logic here
+            // For demonstration, I'll just display a message
+            alert("Timer started!");
+        }
+
+        function backToGenerator() {
+            // This function takes back to the generator, you can add your logic here
+            // For demonstration, I'll just display a message
+            alert("Back to generator!");
+        }
+
+        function handleFileSelect(event) {
+            // This function handles file upload, you can add your logic here
+            // For demonstration, I'll just display a message
+            alert("File uploaded!");
+        }
+
+        function resetInputFields() {
+            // This function resets input fields, you can add your logic here
+            // For demonstration, I'll just display a message
+            alert("Input fields reset!");
+        }
     </script>
 </body>
 </html>
